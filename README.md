@@ -2,7 +2,7 @@
 
 2025-1 캡스톤 프로젝트. 아직 수정중 ...
 
-(아래는 간단 설명임. 미리 설치해야할 패키지는 따로 안적어둠.)
+미리 설치해야할 패키지는 따로 안 적음
 
 ### 파일 트리 설명
 
@@ -14,6 +14,7 @@ Capstone/
 │   │   ├── eye_bpm_v1.csv        # 테스트용 RGB 및 Blink 데이터 CSV
 │   │   ├── test_data_main.csv    # 추가 테스트 데이터 CSV
 │   │   └── test_data_v1.csv      # 추가 테스트 데이터 CSV
+│   │
 │   ├── server/
 │   │   ├── app.py                # FastAPI 서버의 진입점
 │   │   ├── analyzer.py           # 분석 기능을 제공하는 모듈
@@ -21,13 +22,16 @@ Capstone/
 │   │   ├── static/               # 시각화 결과 이미지(.png)를 저장하는 폴더
 │   │   ├── csvs/                 # 분석 후 생성된 CSV 파일 저장 폴더
 │   │   └── uploads/              # 업로드된 영상이 저장될 폴더
+│   │
 │   ├── RPPG-BPM-master/
 │   │   ├── main.py               # CSV 파일을 기반으로 BPM과 눈깜빡임 속도를 plot 이미지로 저장
 │   │   ├── first_stage/          # 신호 처리 관련 모듈
 │   │   └── second_stage/         # 분석 및 시각화 관련 모듈
+│   │
 │   └── Eye_detection/
 │       ├── Eye_detection.py      # 얼굴 및 눈 탐지 관련 코드
 │       └── shape_predictor_68_face_landmarks.dat # 얼굴 랜드마크 모델 데이터
+│
 ├── .git/                         # Git 버전 관리 디렉토리
 └── .gitignore                    # Git 무시 파일 목록
 ```

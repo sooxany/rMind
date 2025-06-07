@@ -1,0 +1,36 @@
+name: flutter_application_1
+description: A new Flutter project.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.1.1 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.6 
+  file_picker: ^6.1.1  # 또는 최신 버전으로
+  video_player: ^2.7.0
+  fl_chart: ^0.64.0
+  
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  assets:
+    - assets/images/gocheok.jpg
+    - assets/images/masan.jpg
+    - assets/images/moonhak.jpg
+    - assets/images/sajik.jpg
+    - assets/images/gwangju.jpg
+    - assets/images/daegu.jpg
+    - assets/images/suwon.jpg
+    - assets/images/jamsil.jpg
+    - assets/images/daejeon.jpg
+
+  uses-material-design: true

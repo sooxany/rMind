@@ -13,8 +13,6 @@ dependencies:
   file_picker: ^6.1.1  # 또는 최신 버전으로
   video_player: ^2.7.0
   fl_chart: ^0.64.0
-  
-
 
 dev_dependencies:
   flutter_test:
@@ -23,14 +21,13 @@ dev_dependencies:
 
 flutter:
   assets:
-    - assets/images/gocheok.jpg
-    - assets/images/masan.jpg
-    - assets/images/moonhak.jpg
-    - assets/images/sajik.jpg
-    - assets/images/gwangju.jpg
-    - assets/images/daegu.jpg
-    - assets/images/suwon.jpg
-    - assets/images/jamsil.jpg
-    - assets/images/daejeon.jpg
-
+    - assets/images/logo.png
+  fonts:
+    - family: poppins
+      fonts:
+        - asset: assets/fonts/poppins/Poppins-Bold.ttf
+    - family: pretendard
+      fonts:
+        - asset: assets/fonts/pretendard/Pretendard-Medium.ttf
+  
   uses-material-design: true

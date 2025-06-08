@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:file_picker/file_picker.dart';
-import 'dart:io';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'result_page.dart'; // 분석 결과 페이지
+import 'result_page.dart';
+import 'upload_video_page.dart';
+import 'VideoInfo.dart';
+import 'notice_page.dart';
+import 'usage_detail_page.dart';
 
 void main() {
   runApp(rMindApp());
@@ -17,7 +17,7 @@ class rMindApp extends StatelessWidget {
       title: 'rMIND',
       theme: ThemeData(
         primarySwatch: Colors.red,
-        fontFamily: 'SFProDisplay',
+        fontFamily: 'pretendard',
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.white,
@@ -31,7 +31,6 @@ class rMindApp extends StatelessWidget {
   }
 }
 
-// ✅ Splash 화면
 class SplashScreen extends StatefulWidget {
   @override
   _SplashScreenState createState() => _SplashScreenState();
@@ -54,14 +53,16 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child:
-            Icon(CupertinoIcons.heart_fill, color: Colors.redAccent, size: 100),
+        child: Image.asset(
+          'assets/images/logo.png',
+          width: 120,
+          height: 120,
+        ),
       ),
     );
   }
 }
 
-// ✅ 홈 화면
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -73,56 +74,35 @@ class _HomePageState extends State<HomePage> {
   List<String> videos = [
     "1. 삼성 기출 면접",
     "2. 취약 질문 모음.zip",
-    "3. 엘지 면접 연습",
+    "3",
   ];
 
-  Future<String?> uploadVideoAndGetImageUrl(File videoFile) async {
-    var request = http.MultipartRequest(
-      'POST',
-      Uri.parse('http://localhost:8000/upload_video'), // 서버 주소 변경 필요 시 여기 수정
-    );
-    request.files
-        .add(await http.MultipartFile.fromPath('file', videoFile.path));
-
-    var response = await request.send();
-
-    if (response.statusCode == 200) {
-      var responseBody = await response.stream.bytesToString();
-      var result = jsonDecode(responseBody);
-      return result['image_url'];
-    } else {
-      return null;
-    }
-  }
-
-  void _goToResultPage() async {
-    FilePickerResult? result =
-        await FilePicker.platform.pickFiles(type: FileType.video);
-
-    if (result != null && result.files.single.path != null) {
-      File video = File(result.files.single.path!);
-
-      String? imageUrl = await uploadVideoAndGetImageUrl(video);
-
-      if (imageUrl != null) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ResultPage(videoPath: imageUrl),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('분석 실패. 다시 시도해주세요.')),
-        );
-      }
-    }
-  }
-
   void _deleteVideo(int index) {
-    setState(() {
-      videos.removeAt(index);
-    });
+    showCupertinoDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text("정말 삭제하시겠습니까?"),
+          content: Text("\n'\${videos[index]}' 영상을 삭제하면 복구할 수 없습니다."),
+          actions: [
+            CupertinoDialogAction(
+              child: Text("아니오", style: TextStyle(color: Colors.grey)),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            CupertinoDialogAction(
+              isDestructiveAction: true,
+              child: Text("예"),
+              onPressed: () {
+                setState(() {
+                  videos.removeAt(index);
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Widget _buildVideoRow(int index) {
@@ -151,7 +131,15 @@ class _HomePageState extends State<HomePage> {
           Row(
             children: [
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ResultPage(videoPath: videos[index]),
+                    ),
+                  );
+                },
                 child: Text("Play", style: TextStyle(color: Colors.red)),
               ),
               TextButton(
@@ -177,7 +165,7 @@ class _HomePageState extends State<HomePage> {
         padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         child: Column(
           children: [
-            Icon(CupertinoIcons.heart_fill, color: Colors.red, size: 70),
+            Image.asset('assets/images/logo.png', width: 70, height: 70),
             SizedBox(height: 6),
             Text("rMIND",
                 style: TextStyle(
@@ -185,7 +173,25 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: FontWeight.bold,
                     color: Colors.red)),
             SizedBox(height: 24),
-            // 영상 카드
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NoticePage()),
+                );
+              },
+              icon: Icon(Icons.campaign),
+              label: Text("공지사항 보기"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red[50],
+                foregroundColor: Colors.red[800],
+                padding: EdgeInsets.symmetric(vertical: 14, horizontal: 18),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+            SizedBox(height: 24),
             Container(
               padding: EdgeInsets.all(18),
               decoration: BoxDecoration(
@@ -213,17 +219,16 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             SizedBox(height: 28),
-            // 사용방법 카드
             Container(
               padding: EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(18),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.red.shade200.withOpacity(0.25),
-                    blurRadius: 12,
-                    offset: Offset(0, 5),
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
                   )
                 ],
               ),
@@ -235,10 +240,24 @@ class _HomePageState extends State<HomePage> {
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.red[900])),
-                  SizedBox(height: 14),
-                  HoverBox(title: "1. 동영상 업로드 방법"),
-                  HoverBox(title: "2. 결과 분석 확인 방법"),
-                  HoverBox(title: "3. 추가 기능 사용법"),
+                  SizedBox(height: 16),
+                  HoverBox(
+                    title: "1. 동영상 업로드 방법",
+                    detail: "홈화면 오른쪽 아래 + 버튼을 누르면 업로드 페이지로 이동합니다."
+                        " 거기서 파일을 선택 후 분석을 시작할 수 있습니다.",
+                  ),
+                  SizedBox(height: 8),
+                  HoverBox(
+                    title: "2. 결과 분석 확인 방법",
+                    detail: "업로드 완료 후 자동으로 분석 결과 화면으로 이동됩니다."
+                        "그 화면에서 음성 및 표정 분석 결과를 확인할 수 있습니다.",
+                  ),
+                  SizedBox(height: 8),
+                  HoverBox(
+                    title: "3. 추가 기능 사용법",
+                    detail: "설정 페이지에서 고급 분석 기능이나 AI 보조 기능을 켜고 끌 수 있습니다."
+                        " 버전별 기능 차이를 확인하세요.",
+                  ),
                 ],
               ),
             ),
@@ -247,8 +266,20 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _goToResultPage,
-        backgroundColor: Colors.redAccent,
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => UploadVideoPage()),
+          );
+          if (result != null && result is String) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ResultPage(videoPath: result),
+              ),
+            );
+          }
+        },
         child: Icon(Icons.add),
       ),
       bottomNavigationBar: HoverBottomNavBar(
@@ -263,10 +294,11 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-// ✅ HoverBox
 class HoverBox extends StatefulWidget {
   final String title;
-  const HoverBox({required this.title});
+  final String detail;
+
+  const HoverBox({required this.title, required this.detail});
 
   @override
   _HoverBoxState createState() => _HoverBoxState();
@@ -280,23 +312,56 @@ class _HoverBoxState extends State<HoverBox> {
     return MouseRegion(
       onEnter: (_) => setState(() => _hovering = true),
       onExit: (_) => setState(() => _hovering = false),
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 200),
-        margin: EdgeInsets.symmetric(vertical: 6),
-        padding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: _hovering ? Colors.red[100] : Colors.grey[100],
-          borderRadius: BorderRadius.circular(12),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UsageDetailPage(
+                title: widget.title,
+                detail: widget.detail,
+              ),
+            ),
+          );
+        },
+        child: AnimatedContainer(
+          duration: Duration(milliseconds: 200),
+          margin: EdgeInsets.symmetric(vertical: 8),
+          padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: _hovering ? Colors.red[50] : Colors.grey[100],
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 6,
+                offset: Offset(0, 3),
+              )
+            ],
+          ),
+          child: Row(
+            children: [
+              Icon(CupertinoIcons.arrow_right_circle_fill,
+                  color: Colors.red[300], size: 20),
+              SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  widget.title,
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87),
+                ),
+              ),
+            ],
+          ),
         ),
-        child: Text(widget.title,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
       ),
     );
   }
 }
 
-// ✅ HoverBottomNavBar
 class HoverBottomNavBar extends StatefulWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;

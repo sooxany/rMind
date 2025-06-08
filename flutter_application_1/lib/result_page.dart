@@ -1,69 +1,108 @@
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
 
-// 추후: 여러 개 이미지 URL을 사용하고 싶다면 리스트로 바꾸기
-class ResultPage extends StatelessWidget {
-  final String videoPath; // plot 이미지 URL
+class ResultPage extends StatefulWidget {
+  final String videoPath;
+  ResultPage({required this.videoPath});
 
-  const ResultPage({required this.videoPath});
+  @override
+  _ResultPageState createState() => _ResultPageState();
+}
+
+class _ResultPageState extends State<ResultPage> {
+  int selectedIndex = 1;
+
+  List<FlSpot> heartRateData = [
+    FlSpot(0, 70),
+    FlSpot(1, 75),
+    FlSpot(2, 90),
+    FlSpot(3, 85),
+    FlSpot(4, 95),
+    FlSpot(5, 80),
+  ];
+
+  List<FlSpot> eyeData = [
+    FlSpot(0, 10),
+    FlSpot(1, 30),
+    FlSpot(2, 20),
+    FlSpot(3, 25),
+    FlSpot(4, 40),
+    FlSpot(5, 15),
+  ];
+
+  List<FlSpot> bodyData = [
+    FlSpot(0, 5),
+    FlSpot(1, 10),
+    FlSpot(2, 7),
+    FlSpot(3, 13),
+    FlSpot(4, 9),
+    FlSpot(5, 6),
+  ];
+
+  Future<void> _handleRefresh() async {
+    await Future.delayed(Duration(seconds: 1));
+    setState(() {
+      heartRateData = heartRateData.reversed.toList();
+      eyeData = eyeData.reversed.toList();
+      bodyData = bodyData.reversed.toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("분석 결과"),
-        backgroundColor: Colors.red,
-        foregroundColor: Colors.white,
-        centerTitle: true,
+        title: Text("Result", style: TextStyle(color: Colors.black)),
+        iconTheme: IconThemeData(color: Colors.black),
+        backgroundColor: Colors.white,
+        elevation: 0,
       ),
       body: RefreshIndicator(
-        onRefresh: () async {
-          // 새로고침 로직 추가 가능 (현재는 대기)
-          await Future.delayed(Duration(seconds: 1));
-        },
+        onRefresh: _handleRefresh,
         child: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
-          padding: EdgeInsets.all(20),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ResultCard(title: "❤️ 심박수", imageUrl: videoPath),
+              if (imageExists('${widget.videoPath}.png'))
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: Image.asset(
+                    'assets/images/${widget.videoPath}.png',
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              _buildResultCard("❤️ 심박수", Colors.redAccent, heartRateData),
               SizedBox(height: 20),
-              ResultCard(title: "👁️ 시선 흔들림", imageUrl: videoPath),
+              _buildResultCard("👁 시선 흔들림", Colors.deepPurple, eyeData),
               SizedBox(height: 20),
-              ResultCard(title: "🕺 몸의 움직임", imageUrl: videoPath),
+              _buildResultCard("💃 몸의 움직임", Colors.teal[700]!, bodyData),
+              SizedBox(height: 60),
             ],
           ),
         ),
       ),
       bottomNavigationBar: HoverBottomNavBar(
-        selectedIndex: 1,
+        selectedIndex: selectedIndex,
         onItemTapped: (index) {
-          // TODO: 필요 시 네비게이션 구현
+          setState(() => selectedIndex = index);
         },
       ),
     );
   }
-}
 
-// ✅ 각 분석 결과를 보여주는 카드 위젯
-class ResultCard extends StatelessWidget {
-  final String title;
-  final String imageUrl;
-
-  const ResultCard({required this.title, required this.imageUrl});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildResultCard(String title, Color color, List<FlSpot> data) {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.red.shade100.withOpacity(0.3),
+            color: Colors.grey.withOpacity(0.12),
             blurRadius: 10,
-            offset: Offset(0, 4),
+            offset: Offset(0, 6),
           )
         ],
       ),
@@ -72,25 +111,31 @@ class ResultCard extends StatelessWidget {
         children: [
           Text(title,
               style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red[800])),
-          SizedBox(height: 10),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-              height: 160,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  height: 160,
-                  color: Colors.grey[200],
-                  child: Center(
-                    child: Text('이미지를 불러올 수 없습니다'),
+                  fontWeight: FontWeight.bold, fontSize: 16, color: color)),
+          SizedBox(height: 12),
+          Container(
+            height: 150,
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: color.withOpacity(0.2)),
+            ),
+            padding: EdgeInsets.all(8),
+            child: LineChart(
+              LineChartData(
+                gridData: FlGridData(show: false),
+                titlesData: FlTitlesData(show: false),
+                borderData: FlBorderData(show: false),
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: data,
+                    isCurved: false,
+                    color: color,
+                    barWidth: 2.5,
+                    dotData: FlDotData(show: false),
                   ),
-                );
-              },
+                ],
+              ),
             ),
           ),
         ],
@@ -99,7 +144,7 @@ class ResultCard extends StatelessWidget {
   }
 }
 
-// ✅ 하단 네비게이션 바 (main.dart와 동일)
+// ✅ Hover Bottom Navigation Bar
 class HoverBottomNavBar extends StatefulWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
@@ -122,8 +167,9 @@ class _HoverBottomNavBarState extends State<HoverBottomNavBar> {
       currentIndex: widget.selectedIndex,
       onTap: widget.onItemTapped,
       type: BottomNavigationBarType.fixed,
-      selectedItemColor: Colors.red,
-      unselectedItemColor: Colors.grey[500],
+      selectedItemColor: Colors.redAccent,
+      unselectedItemColor: Colors.grey,
+      backgroundColor: Colors.white,
       items: List.generate(3, (index) {
         final isHovered = hoveredIndex == index;
         final color = isHovered ? Colors.red : null;
@@ -160,4 +206,11 @@ class _HoverBottomNavBarState extends State<HoverBottomNavBar> {
       }),
     );
   }
+}
+
+bool imageExists(String imageName) {
+  // 실제 앱 빌드시 존재 여부는 따로 확인할 수 없으므로,
+  // 일단 에셋 폴더에 있다고 가정하고 무조건 true 반환하거나,
+  // 직접 존재 여부를 관리하는 List로 처리 가능
+  return true; // 임시 처리
 }

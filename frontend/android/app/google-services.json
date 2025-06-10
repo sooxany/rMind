@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "458910746235",
+    "firebase_url": "https://bediningboard-default-rtdb.firebaseio.com",
+    "project_id": "bediningboard",
+    "storage_bucket": "bediningboard.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:458910746235:android:6811d4f87bf00b308b04de",
+        "android_client_info": {
+          "package_name": "com.example.bedining"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJkoT8Z1l57iWokSbRBebqae2uAEQZA4g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

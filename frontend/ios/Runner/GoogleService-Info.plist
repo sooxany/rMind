@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyDto8INFYeEdQOKHIl8vJWU22cBJSZDCos</string>
+	<key>GCM_SENDER_ID</key>
+	<string>458910746235</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.bedining</string>
+	<key>PROJECT_ID</key>
+	<string>bediningboard</string>
+	<key>STORAGE_BUCKET</key>
+	<string>bediningboard.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:458910746235:ios:31fcf870d461e1c88b04de</string>
+	<key>DATABASE_URL</key>
+	<string>https://bediningboard-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

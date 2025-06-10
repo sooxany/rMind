@@ -45,9 +45,9 @@ while True:
             flag += 1  # 프레임 수 증가
             print(flag)  # 프레임 수 출력
             if flag >= frame_check:  # 설정한 프레임 수 이상 눈을 감았을 때
-                cv2.putText(frame, "****************SLEEPY!****************", (10, 30), 
+                cv2.putText(frame, "ALARM", (10, 30), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-                cv2.putText(frame, "****************SLEEPY!****************", (10, 325),
+                cv2.putText(frame, "ALARM", (10, 325),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
                 #print("Drowsy")
         else:

@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from . import analyzer
 
 # ---------------------------------------------------------------------------
-# 디렉터리 설정
+# 경로 설정
 # ---------------------------------------------------------------------------
 BASE_DIR = Path(__file__).resolve().parent            # .../rppg_project/server
 UPLOAD_DIR = BASE_DIR / "uploads"
@@ -26,7 +26,7 @@ for d in (UPLOAD_DIR, CSV_DIR, STATIC_DIR):
 # ---------------------------------------------------------------------------
 app = FastAPI(title="RPPG Analyzer API")
 
-# CORS (필요 시 도메인 제한 가능)
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -35,7 +35,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 정적 파일 서빙 (/static)
+# png 파일 서빙 (/static)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
@@ -49,7 +49,7 @@ async def upload_video(file: UploadFile = File(...)):
     if not file.filename:
         raise HTTPException(status_code=400, detail="No filename provided")
 
-    # 허용되는 확장자 (필요 시 추가)
+    # 허용되는 확장자
     allowed_ext = {".mp4", ".avi", ".mov", ".mkv"}
     file_suffix = Path(file.filename).suffix.lower()
     if file_suffix not in allowed_ext:
@@ -72,20 +72,29 @@ async def upload_video(file: UploadFile = File(...)):
     blink_csv_path = CSV_DIR / f"{video_id}_blink.csv"
     bpm_img_path = STATIC_DIR / f"{video_id}_bpm.png"
     blink_img_path = STATIC_DIR / f"{video_id}_blink.png"
+    motion_img_path = STATIC_DIR / f"{video_id}_motion.png"
 
-    # 분석 수행
+    # 분석
     try:
+        # 1. 영상에서 RGB/Blink 특징 추출
         analyzer.extract_features_from_video(
             video_path=str(video_path),
             rgb_csv_path=str(rgb_csv_path),
             blink_csv_path=str(blink_csv_path),
         )
 
+        # 2. BPM 및 Blink 시각화
         analyzer.analyze_and_plot(
             rgb_csv_path=str(rgb_csv_path),
             blink_csv_path=str(blink_csv_path),
             bpm_img_path=str(bpm_img_path),
             blink_img_path=str(blink_img_path),
+        )
+
+        # 3. Motion 분석 및 시각화
+        analyzer.analyze_motion(
+            video_path=str(video_path),
+            motion_img_path=str(motion_img_path),
         )
     except Exception as e:  # pragma: no cover
         raise HTTPException(status_code=500, detail=f"Analysis failed: {e}")
@@ -95,4 +104,5 @@ async def upload_video(file: UploadFile = File(...)):
         "video_id": video_id,
         "bpm_plot_url": f"/static/{bpm_img_path.name}",
         "blink_plot_url": f"/static/{blink_img_path.name}",
+        "motion_plot_url": f"/static/{motion_img_path.name}",
     } 

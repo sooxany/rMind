@@ -14,7 +14,6 @@ class _ResultPageState extends State<ResultPage> {
 
   Future<void> _handleRefresh() async {
     await Future.delayed(Duration(seconds: 1));
-    // 이미지 새로고침 - 현재는 특별한 동작 없음
     setState(() {});
   }
 
@@ -35,14 +34,24 @@ class _ResultPageState extends State<ResultPage> {
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           child: Column(
             children: [
-              if (imageExists('${widget.videoPath}.png'))
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Image.asset(
-                    'assets/images/${widget.videoPath}.png',
-                    fit: BoxFit.contain,
-                  ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 140,
+                  height: 140,
+                  fit: BoxFit.contain,
                 ),
+              ),
+              Text(
+                'rMind 분석 결과',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red[800],
+                ),
+              ),
+              SizedBox(height: 24),
               _buildResultCard("❤️ 심박수", Colors.redAccent),
               SizedBox(height: 20),
               _buildResultCard("👁 시선 흔들림", Colors.deepPurple),
@@ -63,7 +72,6 @@ class _ResultPageState extends State<ResultPage> {
   }
 
   Widget _buildResultCard(String title, Color color) {
-    // 제목에 따라 이미지 파일 결정
     String imagePath;
     if (title.contains('심박수')) {
       imagePath = 'assets/images/bpm_ex.png';
@@ -72,7 +80,7 @@ class _ResultPageState extends State<ResultPage> {
     } else if (title.contains('몸의 움직임')) {
       imagePath = 'assets/images/motion_ex.png';
     } else {
-      imagePath = 'assets/images/logo.png'; // 기본값
+      imagePath = 'assets/images/logo.png';
     }
 
     return Container(
@@ -109,7 +117,7 @@ class _ResultPageState extends State<ResultPage> {
                 imagePath,
                 width: double.infinity,
                 height: double.infinity,
-                fit: BoxFit.contain, // 비율 유지하면서 컨테이너에 맞춤
+                fit: BoxFit.contain,
               ),
             ),
           ),
@@ -120,8 +128,6 @@ class _ResultPageState extends State<ResultPage> {
 }
 
 bool imageExists(String imageName) {
-  // 실제 앱 빌드시 존재 여부는 따로 확인할 수 없으므로,
-  // 일단 에셋 폴더에 있다고 가정하고 무조건 true 반환하거나,
-  // 직접 존재 여부를 관리하는 List로 처리 가능
-  return true; // 임시 처리
+  // 추후 리스트 추가용
+  return true;
 }

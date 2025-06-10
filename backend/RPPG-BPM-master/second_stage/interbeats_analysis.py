@@ -4,12 +4,12 @@ from scipy.signal import find_peaks
 def interbeats_analysis(ppg_signal, fps):
     
     length_data = len(ppg_signal)
-    # min_freq = 45  # 최소 bpm (주석 처리됨)
+    # min_freq = 45  # 최소 bpm
     max_freq = 160  # 최대 bpm
-    # min_num_peaks = ((length_data/fps)/60)*min_freq  # 최소 예상 피크 수 (주석 처리됨)
+    # min_num_peaks = ((length_data/fps)/60)*min_freq  # 최소 예상 피크 수
     max_num_peaks = ((length_data/fps)/60)*max_freq  # 최대 예상 피크 수
     min_distance = length_data/max_num_peaks  # 피크 간 최소 거리
-    # max_distance = length_data/min_num_peaks  # 피크 간 최대 거리 (주석 처리됨)
+    # max_distance = length_data/min_num_peaks  # 피크 간 최대 거리
     peaks = find_peaks(ppg_signal, distance=min_distance-1, prominence=10)[0]  # 피크 인덱스 찾기
     distances = []  # 피크 간 거리 저장
     for i in range(len(peaks)-1):

@@ -116,7 +116,6 @@ class _RMindHomeScreenState extends State<RMindHomeScreen> {
           IconButton(
             icon: Icon(Icons.search, color: Colors.black),
             onPressed: () {
-              // 검색 기능 없음 (요구사항에 따라)
             },
           ),
         ],
@@ -126,7 +125,6 @@ class _RMindHomeScreenState extends State<RMindHomeScreen> {
         padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         child: Column(
           children: [
-            // 공지사항 버튼을 전체 너비로 확장
             Container(
               width: double.infinity,
               margin: EdgeInsets.only(bottom: 24),

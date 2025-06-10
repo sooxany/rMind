@@ -2,11 +2,12 @@ import os
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from scipy.interpolate import interp1d
 from typing import Tuple
 
 
-# RPPG-BPM 모듈이 상대경로에 있을 때를 대비한 경로 추가
+# RPPG-BPM 모듈 경로 추가
 CUR_DIR = os.path.dirname(__file__)
 sys.path.append(CUR_DIR)
 
@@ -26,16 +27,15 @@ def analyze_and_plot(
     blink_img_path: str,
     fps: int = 15,
 ) -> Tuple[str, str]:
-    """
-    RGB / Blink CSV 를 읽어 BPM, Blink 그래프를 PNG 로 저장한다.
+    
+    # 스타일 설정
+    mpl.rcParams['font.family'] = 'DejaVu Sans'
+    mpl.rcParams['axes.edgecolor'] = '#DDDDDD'
+    mpl.rcParams['axes.linewidth'] = 0.8
+    mpl.rcParams['axes.titlesize'] = 16
+    mpl.rcParams['axes.labelsize'] = 13
 
-    Returns
-    -------
-    Tuple[str, str]
-        (bpm_img_path, blink_img_path)
-    """
-
-    # --- 데이터 로드 ------------------------------------------------------
+    # 데이터 로드
     BGR_data = np.loadtxt(rgb_csv_path, delimiter="\t")
     if BGR_data.ndim == 1:
         BGR_data = BGR_data.reshape(1, -1)
@@ -49,72 +49,79 @@ def analyze_and_plot(
     if blink_data.ndim:
         blink_data = blink_data.flatten()
 
-    # 첫 21 프레임 제거(초기값 안정화)
+    # 첫 21 프레임 제거(초기값 안정화) 나중에 제거.
     BGR_trim = BGR_data[21:]
     blink_trim = blink_data[21:]
 
-    # --- 신호 생성 --------------------------------------------------------
+    #신호 생성
     signal_chrom = chrom(BGR_trim, fps, 32)
     signal_pos = pos(BGR_trim, fps, 20)
     signal_ica = ica(BGR_trim, fps)
 
-    # --- BPM 계산(Fourier) ------------------------------------------------
+    # BPM 계산(Fourier, Wavelet, Interbeat 바꾸면서)
     hr_fourier_pos = fourier_analysis(signal_pos, fps) * 60
     print(f"POS + Fourier BPM : {hr_fourier_pos:.2f}")
 
-    # --- BPM 시계열(슬라이딩 윈도) ---------------------------------------
-    window_size = 10 * fps        # 10초
-    step_size = 5                 # 프레임 간격
-    bpm_series, time_axis = [], []
-
-    for start in range(0, len(signal_pos) - window_size, step_size):
+    # BPM 시계열
+    bpm_per_second = []
+    time_bpm = []
+    window_size = 5 * fps  # 5초 윈도우로 줄임 (더 민감하게)
+    
+    for start in range(0, len(signal_pos) - window_size, fps):  # 1초씩 이동
         window = signal_pos[start : start + window_size]
         bpm = fourier_analysis(window, fps) * 60
-        if 40 <= bpm <= 180:      # 이상치 제거
-            bpm_series.append(bpm)
-            time_axis.append((start + window_size // 2) / fps)
+        if 40 <= bpm <= 180:  # 이상치 제거
+            bpm_per_second.append(bpm)
+            time_bpm.append(start // fps)  # 1초 단위
 
-    # 보간으로 부드럽게
-    if len(time_axis) > 3:
-        interp = interp1d(time_axis, bpm_series, kind="cubic", fill_value="extrapolate")
-        fine_time = np.linspace(min(time_axis), max(time_axis), 600)
-        smooth_bpm = interp(fine_time)
-    else:
-        fine_time, smooth_bpm = time_axis, bpm_series
-
-    # --- 그래프 ① BPM ----------------------------------------------------
-    plt.figure(figsize=(12, 5))
-    plt.plot(fine_time, smooth_bpm, color="crimson", linewidth=2)
-    plt.axhspan(60, 100, color="lightgreen", alpha=0.2, label="Normal range")
+    # 그래프
+    plt.figure(figsize=(12, 5), dpi=120)
+    plt.plot(time_bpm, bpm_per_second, color='#007AFF', linewidth=2.2, label='Heart Rate', alpha=0.9)
+    plt.axhspan(60, 100, color='lightgreen', alpha=0.2, label='Normal range')
+    
+    # 스타일
+    plt.title("Heart Rate Over Time", pad=15)
     plt.xlabel("Time (seconds)")
     plt.ylabel("Estimated BPM")
-    plt.title("Continuous Heart Rate over Time")
-    plt.grid(True)
-    plt.legend()
+    if len(time_bpm) > 0:
+        plt.xticks(range(0, max(time_bpm)+1, max(1, len(time_bpm)//10)))
+    plt.grid(axis='y', linestyle='--', alpha=0.3)
+    plt.legend(loc='upper right', frameon=False)
     plt.tight_layout()
-    plt.savefig(bpm_img_path, dpi=200)
+    plt.savefig(bpm_img_path, dpi=300)
     plt.close()
 
-    # --- 그래프 ② Blink ---------------------------------------------------
+    # 그래프
     blink_counts, time_blink = [], []
     for start in range(0, len(blink_trim), fps):
         window = blink_trim[start : start + fps]
         blink_counts.append(np.sum(window))
-        time_blink.append(start / fps)
+        time_blink.append(start // fps)  # 1초 단위
 
-    plt.figure(figsize=(10, 4))
-    plt.bar(time_blink, blink_counts, width=0.8, color="skyblue")
-    plt.xlabel("Time (sec)")
+    plt.figure(figsize=(12, 5), dpi=120)
+    plt.plot(time_blink, blink_counts, color='#34C759', linewidth=2.2, label='Blink Rate', alpha=0.9)
+    
+    # 평균 blink rate 라인 추가
+    if len(blink_counts) > 0:
+        avg_blink = np.mean(blink_counts)
+        plt.axhline(y=avg_blink, color='gray', linestyle='--', linewidth=1.4, label='Average')
+    
+    # 스타일
+    plt.title("Blink Frequency Over Time", pad=15)
+    plt.xlabel("Time (seconds)")
     plt.ylabel("Blinks / sec")
-    plt.title("Blink Frequency")
+    if len(time_blink) > 0:
+        plt.xticks(range(0, max(time_blink)+1, max(1, len(time_blink)//10)))
+    plt.grid(axis='y', linestyle='--', alpha=0.3)
+    plt.legend(loc='upper right', frameon=False)
     plt.tight_layout()
-    plt.savefig(blink_img_path, dpi=200)
+    plt.savefig(blink_img_path, dpi=300)
     plt.close()
 
     return bpm_img_path, blink_img_path
 
 
-# 단독 실행 시 CLI 기능 ----------------------------------------------------
+# 단독 실행 시 CLI 기능
 if __name__ == "__main__":
     import argparse
 

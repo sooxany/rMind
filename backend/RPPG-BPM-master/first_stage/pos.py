@@ -19,7 +19,6 @@ def pos(BGR_signal, fps, l):
         
     # 겹치는 구간 길이 l이 지정되지 않은 경우
     if(l == None):
-        # Wang2017_2 논문에서는 fps=20일 때 l=20 사용
         # 비율 유지를 위해 기본적으로 l = fps로 설정
         l = int(fps)
     elif(l>0):
@@ -66,7 +65,7 @@ def pos(BGR_signal, fps, l):
             diag_mean_color_inv = np.linalg.inv(diag_mean_color)
             Cn = np.matmul(diag_mean_color_inv,C)
 
-            # 투영 행렬 (Projection Matrix)
+            # Projection Matrix
             projection_matrix = np.array([[0,1,-1],[-2,1,1]])
             
             S = np.matmul(projection_matrix,Cn)
@@ -75,13 +74,11 @@ def pos(BGR_signal, fps, l):
             S[0,:] = bandpass_filter(S[0,:], 0.5, 4.0)
             S[1,:] = bandpass_filter(S[1,:], 0.5, 4.0)
             
-            # 여기서 S[0,:]는 S1, S[1,:]는 S2 (Wang2017_2 논문 기준)
+            # 여기서 S[0,:]는 S1, S[1,:]는 S2
             std = np.array([1,np.std(S[0,:])/np.std(S[1,:])])
             h = np.matmul(std,S)
             
             # 최종 신호 계산
-            # np.std(h)로 나누는 것은 인터넷 구현체를 참고함
-            # https://github.com/pavisj/rppg-pos/blob/master/pos_face_seg.py
             # 평균 편차로 나누어주면 결과 신호의 스파이크 현상이 제거됨
             H[m:n] = H[m:n] + (h-np.mean(h))/np.std(h)
             

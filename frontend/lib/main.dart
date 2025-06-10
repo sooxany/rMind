@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
       child: Consumer<Auth>(
         builder: (ctx, auth, _) => MaterialApp(
           title: 'rMIND',
+          debugShowCheckedModeBanner : false,
           theme: ThemeData(
             primaryColor: Colors.red,
             fontFamily: 'pretendard',

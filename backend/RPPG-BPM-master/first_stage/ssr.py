@@ -17,10 +17,9 @@ def SSR(X, fps, l = None):
     
     # l - 시간 구간 길이
     if(l == None):
-        # Wang2016 논문에서는 l=20이 최적값으로 제시됨
         l = 20
     
-    # C - 상관행렬 (correlation matrix)
+    # C - correlation matrix
     C = np.zeros([num_frames,3,3])
     # A - C 행렬의 고유값 (eigenvalues)
     A = np.zeros([num_frames,3])
@@ -41,11 +40,9 @@ def SSR(X, fps, l = None):
             SR_array = []
             for t in range(tau,k,1):
                 # numpy 특성상 벡터가 기본적으로 행으로 저장되어 있어 전치(transpose) 연산이 뒤바뀜
-                # 알고리즘 7번 줄에 해당하는 첫 번째 항 (주의: 0이나 작은 값 나누기 → NaN, inf, -inf 발생 가능성)
                 first_term = (np.sqrt(abs((eps + A[t][0])/(eps + A[tau][1]))))*U[t][0]*(np.transpose(U[tau][1].reshape(len(U[tau][1]), -1)))*U[tau][1]
-                # 알고리즘 7번 줄에 해당하는 두 번째 항 (첫 번째 항과 동일한 문제)
                 second_term = (np.sqrt(abs((eps + A[t][0])/(eps + A[tau][2]))))*U[t][0]*(np.transpose(U[tau][2].reshape(len(U[tau][2]), -1)))*U[tau][2]
-                # 편의를 위해 두 항을 나눠서 표현
+                # 두 항을 나눠서 표현
                 SR = first_term + second_term
                 #
                 SR_array.append(SR[0])

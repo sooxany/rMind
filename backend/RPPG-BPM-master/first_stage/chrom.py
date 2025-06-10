@@ -18,15 +18,14 @@ def chrom(BGR_signal, fps, interval_length = None):
         # fps 값이 너무 낮음 (bandpass 필터를 위해 fps >= 9 필요)
         raise NameError('WrongFPS')
      
-    # 헨닝 창(Hanning window) 크기 설정
+    # Hanning window 크기 설정
     if(interval_length == None):
-        # Haan2013 논문에서는 fps 20일 때 창 크기 32 사용
         # 비율 유지 위해 32/20 배수 적용 (fps=20이면 창 32)
         interval_size = int(fps*(32.0/20.0))
     elif(interval_length>0):
         interval_size = interval_length//1
     else: 
-        # 헨닝 창 크기가 부적절함 (32 이상이어야 함)
+        # Hanning window 크기가 부적절함 (32 이상이어야 함)
         raise NameError('WrongIntervalLength')
     
     # 원본 데이터 길이 유효성 검사
@@ -50,7 +49,6 @@ def chrom(BGR_signal, fps, interval_length = None):
         bandpass = lfilter(b, a, data)
         return bandpass
 
-    #-------------------------------------------------------------------
     # 구간(interval) 내 신호 S 계산 함수
     def S_signal_on_interval(low_limit,high_limit):
         
@@ -88,12 +86,11 @@ def chrom(BGR_signal, fps, interval_length = None):
         Xf = bandpass_filter(Xs, 0.5, 4.0)
         Yf = bandpass_filter(Ys, 0.5, 4.0)
         
-        # 헨닝 창 적용 전 신호 S 계산
+        # Hanning window 적용 전 신호 S 계산
         alpha = Xf.std()/Yf.std()
         S_before = Xf - alpha*Yf
         
         return S_before
-    #-------------------------------------------------------------------
         
     # 전체 프레임 수에 따른 구간 개수 계산
     number_interval = 2.0*num_frames/interval_size+1
@@ -108,10 +105,10 @@ def chrom(BGR_signal, fps, interval_length = None):
         intervals.append([i_low, i_high])
         S_before_on_interval.append(S_signal_on_interval(i_low,i_high))  
     
-    # 헨닝(Hanning) 창 생성
+    # Hanning window 생성
     wh = get_window('hamming', interval_size)    
     
-    # 헨닝 창이 적용되지 않는 구간 인덱스 찾기
+    # Hanning window가 적용되지 않는 구간 인덱스 찾기
     index_without_henning = []
     # 왼쪽
     for i in range(intervals[0][0], intervals[1][0], 1):

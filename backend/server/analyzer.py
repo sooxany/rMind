@@ -1,8 +1,3 @@
-"""Analyzer module.
-
-FastAPI 엔드포인트는 이 모듈만 import 한 뒤 함수들을 사용하도록 하여, 
-실제 구현 파일이 변경되더라도 의존성을 한 곳에서 관리할 수 있도록 한다.
-"""
 from __future__ import annotations
 
 import importlib.util
@@ -27,7 +22,7 @@ def _load_module(module_name: str, file_path: Path) -> ModuleType:
         raise ImportError(f"Unable to load module {module_name} from {file_path}")
     module = importlib.util.module_from_spec(spec)
     sys.modules[module_name] = module  # 캐시에 등록
-    spec.loader.exec_module(module)  # type: ignore[attr-defined]
+    spec.loader.exec_module(module)
     return module
 
 
@@ -36,7 +31,7 @@ def _load_module(module_name: str, file_path: Path) -> ModuleType:
 # ---------------------------------------------------------------------------
 save_data_path = BASE_DIR / "test_data" / "save_data.py"
 _save_data_mod = _load_module("_save_data", save_data_path)
-extract_features_from_video: Callable = _save_data_mod.extract_features_from_video  # type: ignore[attr-defined]
+extract_features_from_video: Callable = _save_data_mod.extract_features_from_video
 
 
 # ---------------------------------------------------------------------------
@@ -46,7 +41,7 @@ extract_features_from_video: Callable = _save_data_mod.extract_features_from_vid
 # ---------------------------------------------------------------------------
 main_path = BASE_DIR / "RPPG-BPM-master" / "main.py"
 _rppg_main_mod = _load_module("_rppg_main", main_path)
-analyze_and_plot: Callable = _rppg_main_mod.analyze_and_plot  # type: ignore[attr-defined]
+analyze_and_plot: Callable = _rppg_main_mod.analyze_and_plot
 
 
 # ---------------------------------------------------------------------------
@@ -69,11 +64,6 @@ def analyze_motion(
         안정성 임계값 (기본값: 2.0)
     second_interval : int
         초 단위 간격 (기본값: 1초)
-    
-    Returns
-    -------
-    str
-        저장된 이미지 파일 경로
     """
     # 스타일
     mpl.rcParams['font.family'] = 'DejaVu Sans'

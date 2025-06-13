@@ -1,65 +1,48 @@
-## rMind project
+# rMind: Interview Response Analysis App using rPPG
 
-2025-1 캡스톤 프로젝트. 아직 수정중 ...
+**rMind** is a mobile-based interview response analysis platform that leverages **remote photoplethysmography (rPPG)** technology to non-invasively measure heart rate and physical signals from facial videos.  
+The system visualizes physiological responses such as **heart rate variability, blink frequency, and body movement** to help users understand their stress and engagement levels during mock interviews.
 
-미리 설치해야할 패키지는 따로 안 적음
+---
 
-### 파일 트리 설명
+## 🔍 Project Overview
 
-```
-Capstone/
-├── backend/
-│   ├── test_data/
-│   │   ├── save_data.py          # 영상 파일을 분석하여 RGB 평균값과 눈깜빡임 정보를 CSV로 저장
-│   │   ├── eye_bpm_v1.csv        # 테스트용 RGB 및 Blink 데이터 CSV
-│   │   ├── test_data_main.csv    # 추가 테스트 데이터 CSV
-│   │   └── test_data_v1.csv      # 추가 테스트 데이터 CSV
-│   │
-│   ├── server/
-│   │   ├── app.py                # FastAPI 서버의 진입점
-│   │   ├── analyzer.py           # 분석 기능을 제공하는 모듈
-│   │   ├── __init__.py           # 패키지 초기화 파일
-│   │   ├── static/               # 시각화 결과 이미지(.png)를 저장하는 폴더
-│   │   ├── csvs/                 # 분석 후 생성된 CSV 파일 저장 폴더
-│   │   └── uploads/              # 업로드된 영상이 저장될 폴더
-│   │
-│   ├── RPPG-BPM-master/
-│   │   ├── main.py               # CSV 파일을 기반으로 BPM과 눈깜빡임 속도를 plot 이미지로 저장
-│   │   ├── first_stage/          # 신호 처리 관련 모듈
-│   │   └── second_stage/         # 분석 및 시각화 관련 모듈
-│   │
-│   └── Eye_detection/
-│       ├── Eye_detection.py      # 얼굴 및 눈 탐지 관련 코드
-│       └── shape_predictor_68_face_landmarks.dat # 얼굴 랜드마크 모델 데이터
-│
-├── .git/                         # Git 버전 관리 디렉토리
-└── .gitignore                    # Git 무시 파일 목록
-```
+- **Purpose**: To build a contactless physiological feedback system for interview preparation using facial video analysis.
+- **Core Feature**: Real-time heart rate estimation using rPPG without any physical sensor.
+- **Platform**: Flutter-based mobile frontend + FastAPI-based backend server.
 
-### 서버 실행 방법
+---
 
-1. 프로젝트 디렉토리로 이동:
-   ```bash
-   cd /path/to/Capstone
-   ```
-2. 서버를 실행:
-   ```bash
-   uvicorn rppg_project.server.app:app --reload
-   ```
-3. 웹 브라우저로 Swagger 통해서 확인 가능:  
-   http://127.0.0.1:8000/docs 접속
+## 🎯 Key Features
 
-### 전체적인 플로우
+- 📷 **Video Upload**: Users can upload recorded interview response videos via mobile app.
+- 💓 **rPPG Heart Rate Analysis**: Extracts green-channel pulse signals from facial regions.
+- 👁️ **Blink Detection**: Detects and visualizes eye blink frequency per second.
+- 🧍 **Body Motion Visualization**: Detects abrupt head/shoulder movements using face landmarks.
+- 📊 **Result Visualization**: Displays 3 analysis graphs (BPM curve, blink timeline, motion score) for each video.
 
-1. 영상 업로드:  
-   사용자가 /upload_video 엔드포인트로 영상을 업로드.
-   업로드된 영상은 uploads/ 폴더에 UUID 기반 이름으로 저장.
+---
 
-2. 영상 분석:  
-   extract_features_from_video 함수가 호출되어 영상에서 RGB 평균값과 눈깜빡임 정보를 추출하여 csvs/ 폴더에 CSV 파일로 저장.
+## ⚙️ Technologies Used
 
-3. 데이터 시각화:  
-   analyze_and_plot 함수가 호출되어 CSV 데이터를 기반으로 BPM과 눈깜빡임 속도를 시각화하여 static/ 폴더에 PNG 이미지로 저장.
+- **Frontend**: Flutter, Dart
+- **Backend**: FastAPI, Python
+- **Signal Processing**: OpenCV, NumPy, SciPy
+- **Face Detection**: Haar Cascade, Dlib (68-point landmarks)
+- **rPPG Algorithms**: CHROM, POS, ICA
+- **Heart Rate Estimation**: Fourier, Wavelet, Interbeat Interval methods
+- **Data Format**: CSV for raw signal logging, PNG for result visualization
 
-4. 결과 반환:  
-   API는 JSON 형태로 분석 결과의 URL을 반환합니다. 사용자는 이 URL을 통해 시각화된 결과를 확인 가능.
+---
+
+## 🧪 Experiment Summary
+
+A series of test scenarios were conducted to simulate different psychological and physiological interview reactions:
+
+1. High initial heart rate → gradual relaxation
+2. Calm start → sudden BPM spike and fixed high state
+3. Body motion-induced irregular BPM fluctuation → stabilization
+4. Two-step BPM spikes (physical activity + subject swap)
+5. Persistent erratic BPM pattern from dynamic subject
+
+rMind successfully captured all significant patterns and visualized them as time-series graphs, offering useful insights into the user’s interview behavior.

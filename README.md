@@ -1,48 +1,29 @@
-# rMind: Interview Response Analysis App using rPPG
+# rMind: 비접촉 면접 반응 분석 플랫폼
 
-**rMind** is a mobile-based interview response analysis platform that leverages **remote photoplethysmography (rPPG)** technology to non-invasively measure heart rate and physical signals from facial videos.  
-The system visualizes physiological responses such as **heart rate variability, blink frequency, and body movement** to help users understand their stress and engagement levels during mock interviews.
-
----
-
-## 🔍 Project Overview
-
-- **Purpose**: To build a contactless physiological feedback system for interview preparation using facial video analysis.
-- **Core Feature**: Real-time heart rate estimation using rPPG without any physical sensor.
-- **Platform**: Flutter-based mobile frontend + FastAPI-based backend server.
+**rMind**는 영상 기반의 rPPG(remote photoplethysmography) 기술을 활용하여  
+면접 상황에서 사용자의 생리적 반응을 비접촉 방식으로 분석하고 시각화하는 모바일 플랫폼입니다.  
+심박수(BPM), 눈 깜빡임, 신체 움직임 등 **비언어적 신호**를 정량적으로 표현하여,  
+면접 준비 과정에서 자신의 긴장도 및 반응을 객관적으로 파악할 수 있도록 지원합니다.
 
 ---
 
-## 🎯 Key Features
+## 🎯 주요 기능
 
-- 📷 **Video Upload**: Users can upload recorded interview response videos via mobile app.
-- 💓 **rPPG Heart Rate Analysis**: Extracts green-channel pulse signals from facial regions.
-- 👁️ **Blink Detection**: Detects and visualizes eye blink frequency per second.
-- 🧍 **Body Motion Visualization**: Detects abrupt head/shoulder movements using face landmarks.
-- 📊 **Result Visualization**: Displays 3 analysis graphs (BPM curve, blink timeline, motion score) for each video.
-
----
-
-## ⚙️ Technologies Used
-
-- **Frontend**: Flutter, Dart
-- **Backend**: FastAPI, Python
-- **Signal Processing**: OpenCV, NumPy, SciPy
-- **Face Detection**: Haar Cascade, Dlib (68-point landmarks)
-- **rPPG Algorithms**: CHROM, POS, ICA
-- **Heart Rate Estimation**: Fourier, Wavelet, Interbeat Interval methods
-- **Data Format**: CSV for raw signal logging, PNG for result visualization
+- 📝 **회원가입 및 로그인**: 이메일 기반 사용자 계정 생성 및 로그인 기능 구현
+- 📷 **면접 영상 업로드**: 모바일 앱에서 사전 녹화된 면접 영상을 서버로 업로드
+- 💓 **심박수(rPPG) 분석**: 얼굴 영상의 G 채널 변화를 기반으로 실시간 BPM 추정
+- 👁️ **눈 깜빡임 분석**: 프레임 단위로 눈 감김 여부를 감지하여 시간별 깜빡임 빈도 시각화
+- 🧍 **신체 움직임 분석**: dlib 얼굴 랜드마크를 이용하여 움직임 급변 감지 및 스코어화
+- 📊 **시각화 결과 제공**: 분석 결과를 BPM 곡선, 눈 깜빡임 그래프, 움직임 점수 그래프로 제공
 
 ---
 
-## 🧪 Experiment Summary
+## ⚙️ 사용 기술
 
-A series of test scenarios were conducted to simulate different psychological and physiological interview reactions:
-
-1. High initial heart rate → gradual relaxation
-2. Calm start → sudden BPM spike and fixed high state
-3. Body motion-induced irregular BPM fluctuation → stabilization
-4. Two-step BPM spikes (physical activity + subject swap)
-5. Persistent erratic BPM pattern from dynamic subject
-
-rMind successfully captured all significant patterns and visualized them as time-series graphs, offering useful insights into the user’s interview behavior.
+- **프론트엔드**: Flutter, Dart
+- **백엔드**: FastAPI, Python
+- **신호 처리**: OpenCV, NumPy, SciPy
+- **얼굴 인식**: Haar Cascade, Dlib
+- **rPPG 알고리즘**: CHROM, POS, ICA
+- **심박수 추정 기법**: 푸리에 변환, 웨이블릿 분석, 피크 간 분석
+- **데이터 처리 포맷**: CSV(신호 저장), PNG(결과 이미지 시각화)

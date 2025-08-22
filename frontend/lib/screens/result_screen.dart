@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'dart:typed_data';
 import '../widgets/rmind_widgets.dart';
+import '../services/api_service.dart';
+import 'my_page_screen.dart';
 
 class ResultPage extends StatefulWidget {
   final String videoPath;
-  ResultPage({required this.videoPath});
+  final Map<String, dynamic>? analysisResult;
+
+  ResultPage({required this.videoPath, this.analysisResult});
 
   @override
   _ResultPageState createState() => _ResultPageState();
@@ -11,9 +16,45 @@ class ResultPage extends StatefulWidget {
 
 class _ResultPageState extends State<ResultPage> {
   int selectedIndex = 1;
+  Map<String, Uint8List?> _downloadedImages = {};
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.analysisResult != null) {
+      _downloadImages();
+    }
+  }
+
+  Future<void> _downloadImages() async {
+    if (widget.analysisResult == null) return;
+
+    setState(() => _isLoading = true);
+
+    final videoId = widget.analysisResult!['video_id'] as String;
+    final imageTypes = ['bpm', 'blink', 'motion'];
+
+    for (String imageType in imageTypes) {
+      try {
+        final imageData = await ApiService.downloadImage(videoId, imageType);
+        if (imageData != null) {
+          _downloadedImages[imageType] = imageData;
+        }
+      } catch (e) {
+        print('Failed to download $imageType image: $e');
+      }
+    }
+
+    setState(() => _isLoading = false);
+  }
 
   Future<void> _handleRefresh() async {
-    await Future.delayed(Duration(seconds: 1));
+    if (widget.analysisResult != null) {
+      await _downloadImages();
+    } else {
+      await Future.delayed(Duration(seconds: 1));
+    }
     setState(() {});
   }
 
@@ -54,7 +95,7 @@ class _ResultPageState extends State<ResultPage> {
               SizedBox(height: 24),
               _buildResultCard("❤️ 심박수", Colors.redAccent),
               SizedBox(height: 20),
-              _buildResultCard("👁 시선 흔들림", Colors.deepPurple),
+              _buildResultCard("👁 눈 깜빡임", Colors.deepPurple),
               SizedBox(height: 20),
               _buildResultCard("💃 몸의 움직임", Colors.teal[700]!),
               SizedBox(height: 60),
@@ -65,22 +106,36 @@ class _ResultPageState extends State<ResultPage> {
       bottomNavigationBar: RMindBottomNavBar(
         selectedIndex: selectedIndex,
         onItemTapped: (index) {
-          setState(() => selectedIndex = index);
+          if (index == 2) {
+            // Settings 버튼 클릭 시 마이페이지로 이동
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MyPageScreen()),
+            );
+          } else {
+            setState(() => selectedIndex = index);
+          }
         },
       ),
     );
   }
 
   Widget _buildResultCard(String title, Color color) {
-    String imagePath;
+    String imageType;
+    String fallbackAssetPath;
+
     if (title.contains('심박수')) {
-      imagePath = 'assets/images/bpm_ex.png';
+      imageType = 'bpm';
+      fallbackAssetPath = 'assets/images/bpm_ex.png';
     } else if (title.contains('시선 흔들림')) {
-      imagePath = 'assets/images/blink_ex.png';
+      imageType = 'blink';
+      fallbackAssetPath = 'assets/images/blink_ex.png';
     } else if (title.contains('몸의 움직임')) {
-      imagePath = 'assets/images/motion_ex.png';
+      imageType = 'motion';
+      fallbackAssetPath = 'assets/images/motion_ex.png';
     } else {
-      imagePath = 'assets/images/logo.png';
+      imageType = '';
+      fallbackAssetPath = 'assets/images/logo.png';
     }
 
     return Container(
@@ -93,36 +148,85 @@ class _ResultPageState extends State<ResultPage> {
             color: Colors.grey.withOpacity(0.12),
             blurRadius: 10,
             offset: Offset(0, 6),
-          )
+          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 16, color: color)),
+          Row(
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: color,
+                ),
+              ),
+              Spacer(),
+              if (_isLoading)
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+            ],
+          ),
           SizedBox(height: 12),
           Container(
-            height: 150,
+            width: double.infinity,
+            height: MediaQuery.of(context).size.height * 0.35,
             decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: color.withOpacity(0.2)),
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: color.withOpacity(0.3), width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: Offset(0, 4),
+                ),
+              ],
             ),
-            padding: EdgeInsets.all(8),
+            padding: EdgeInsets.all(12),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                imagePath,
-                width: double.infinity,
-                height: double.infinity,
-                fit: BoxFit.contain,
-              ),
+              borderRadius: BorderRadius.circular(12),
+              child: _buildImageWidget(imageType, fallbackAssetPath),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildImageWidget(String imageType, String fallbackAssetPath) {
+    // 서버에서 분석된 결과가 있고, 해당 이미지가 다운로드되었다면 서버 이미지 사용
+    if (widget.analysisResult != null &&
+        _downloadedImages.containsKey(imageType) &&
+        _downloadedImages[imageType] != null) {
+      return Image.memory(
+        _downloadedImages[imageType]!,
+        width: double.infinity,
+        height: double.infinity,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) {
+          return Image.asset(
+            fallbackAssetPath,
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.contain,
+          );
+        },
+      );
+    }
+
+    // 기본 예시 이미지 사용
+    return Image.asset(
+      fallbackAssetPath,
+      width: double.infinity,
+      height: double.infinity,
+      fit: BoxFit.contain,
     );
   }
 }

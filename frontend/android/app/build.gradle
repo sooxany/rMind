@@ -23,9 +23,7 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'com.google.gms.google-services'
+// Removed legacy apply plugin lines. Using plugins DSL above.
 
 android {
     namespace "com.example.bedining"
@@ -72,7 +70,7 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "com.android.support:multidex:2.0.1"
+    implementation "androidx.multidex:multidex:2.0.1"
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
     implementation("com.google.firebase:firebase-analytics")
 }

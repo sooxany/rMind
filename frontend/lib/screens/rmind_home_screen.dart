@@ -5,6 +5,7 @@ import '../widgets/app_drawer.dart';
 import 'result_screen.dart';
 import 'upload_video_screen.dart';
 import 'notice_screen.dart';
+import 'my_page_screen.dart';
 
 class RMindHomeScreen extends StatefulWidget {
   @override
@@ -14,11 +15,7 @@ class RMindHomeScreen extends StatefulWidget {
 class _RMindHomeScreenState extends State<RMindHomeScreen> {
   int selectedIndex = 0;
 
-  List<String> videos = [
-    "1. 삼성 기출 면접",
-    "2. 취약 질문 모음.zip",
-    "3. test",
-  ];
+  List<String> videos = ["1. 삼성 기출 면접", "2. 취약 질문 모음.zip", "3. Test video.mp4"];
 
   void _deleteVideo(int index) {
     showCupertinoDialog(
@@ -67,10 +64,11 @@ class _RMindHomeScreenState extends State<RMindHomeScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-              child: Text(
-            videos[index],
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-          )),
+            child: Text(
+              videos[index],
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            ),
+          ),
           Row(
             children: [
               TextButton(
@@ -87,11 +85,13 @@ class _RMindHomeScreenState extends State<RMindHomeScreen> {
               ),
               TextButton(
                 onPressed: () => _deleteVideo(index),
-                child:
-                    Text("Delete", style: TextStyle(color: Colors.grey[700])),
+                child: Text(
+                  "Delete",
+                  style: TextStyle(color: Colors.grey[700]),
+                ),
               ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -115,8 +115,7 @@ class _RMindHomeScreenState extends State<RMindHomeScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.search, color: Colors.black),
-            onPressed: () {
-            },
+            onPressed: () {},
           ),
         ],
       ),
@@ -157,17 +156,20 @@ class _RMindHomeScreenState extends State<RMindHomeScreen> {
                     color: Colors.red.shade200.withOpacity(0.25),
                     blurRadius: 12,
                     offset: Offset(0, 5),
-                  )
+                  ),
                 ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("📺 last video feedback",
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red[900])),
+                  Text(
+                    "📺 last video feedback",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red[900],
+                    ),
+                  ),
                   SizedBox(height: 14),
                   for (int i = 0; i < videos.length; i++) _buildVideoRow(i),
                 ],
@@ -184,33 +186,39 @@ class _RMindHomeScreenState extends State<RMindHomeScreen> {
                     color: Colors.black.withOpacity(0.05),
                     blurRadius: 10,
                     offset: Offset(0, 4),
-                  )
+                  ),
                 ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("📘 rMIND 사용방법",
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red[900])),
+                  Text(
+                    "📘 rMIND 사용방법",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red[900],
+                    ),
+                  ),
                   SizedBox(height: 16),
                   HoverBox(
                     title: "1. 동영상 업로드 방법",
-                    detail: "홈화면 오른쪽 아래 + 버튼을 누르면 업로드 페이지로 이동합니다."
+                    detail:
+                        "홈화면 오른쪽 아래 + 버튼을 누르면 업로드 페이지로 이동합니다."
                         " 거기서 파일을 선택 후 분석을 시작할 수 있습니다.",
                   ),
                   SizedBox(height: 8),
                   HoverBox(
                     title: "2. 결과 분석 확인 방법",
-                    detail: "업로드 완료 후 자동으로 분석 결과 화면으로 이동됩니다."
+                    detail:
+                        "업로드 완료 후 자동으로 분석 결과 화면으로 이동됩니다."
                         "그 화면에서 음성 및 표정 분석 결과를 확인할 수 있습니다.",
                   ),
                   SizedBox(height: 8),
                   HoverBox(
                     title: "3. 추가 기능 사용법",
-                    detail: "설정 페이지에서 고급 분석 기능이나 AI 보조 기능을 켜고 끌 수 있습니다."
+                    detail:
+                        "설정 페이지에서 고급 분석 기능이나 AI 보조 기능을 켜고 끌 수 있습니다."
                         " 버전별 기능 차이를 확인하세요.",
                   ),
                 ],
@@ -240,9 +248,17 @@ class _RMindHomeScreenState extends State<RMindHomeScreen> {
       bottomNavigationBar: RMindBottomNavBar(
         selectedIndex: selectedIndex,
         onItemTapped: (index) {
-          setState(() {
-            selectedIndex = index;
-          });
+          if (index == 2) {
+            // Settings 버튼 클릭 시 마이페이지로 이동
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MyPageScreen()),
+            );
+          } else {
+            setState(() {
+              selectedIndex = index;
+            });
+          }
         },
       ),
     );

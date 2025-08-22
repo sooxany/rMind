@@ -7,6 +7,7 @@ from pathlib import Path
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 from . import analyzer
 
@@ -105,4 +106,30 @@ async def upload_video(file: UploadFile = File(...)):
         "bpm_plot_url": f"/static/{bpm_img_path.name}",
         "blink_plot_url": f"/static/{blink_img_path.name}",
         "motion_plot_url": f"/static/{motion_img_path.name}",
-    } 
+    }
+
+
+# ---------------------------------------------------------------------------
+# 라우터: 이미지 다운로드
+# ---------------------------------------------------------------------------
+@app.get("/download/{image_type}/{video_id}")
+async def download_image(image_type: str, video_id: str):
+    """특정 비디오 ID의 분석 결과 이미지를 다운로드한다."""
+    # 이미지 타입 검증
+    allowed_types = {"bpm", "blink", "motion"}
+    if image_type not in allowed_types:
+        raise HTTPException(status_code=400, detail="Invalid image type")
+    
+    # 이미지 파일 경로 생성
+    img_filename = f"{video_id}_{image_type}.png"
+    img_path = STATIC_DIR / img_filename
+    
+    # 파일 존재 여부 확인
+    if not img_path.exists():
+        raise HTTPException(status_code=404, detail="Image not found")
+    
+    return FileResponse(
+        path=str(img_path),
+        media_type="image/png",
+        filename=img_filename
+    ) 

@@ -27,9 +27,9 @@ def _load_module(module_name: str, file_path: Path) -> ModuleType:
 
 
 # ---------------------------------------------------------------------------
-# 1) extract_features_from_video – test_data/save_data.py
+# 1) extract_features_from_video – test_data/save_data_demo.py
 # ---------------------------------------------------------------------------
-save_data_path = BASE_DIR / "test_data" / "save_data.py"
+save_data_path = BASE_DIR / "test_data" / "save_data_demo.py"
 _save_data_mod = _load_module("_save_data", save_data_path)
 extract_features_from_video: Callable = _save_data_mod.extract_features_from_video
 

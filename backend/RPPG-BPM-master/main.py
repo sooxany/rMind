@@ -11,7 +11,10 @@ from typing import Tuple
 CUR_DIR = os.path.dirname(__file__)
 sys.path.append(CUR_DIR)
 
-# first_stage / second_stage 모듈 import
+# 새로운 고급 rPPG 분석기 import
+from advanced_rppg import advanced_analyze_and_plot
+
+# 기존 모듈들 (폴백용)
 from first_stage.chrom import chrom
 from first_stage.pos import pos
 from first_stage.ica import ica
@@ -27,6 +30,41 @@ def analyze_and_plot(
     blink_img_path: str,
     fps: int = 15,
 ) -> Tuple[str, str]:
+    """
+    개선된 rPPG 분석 함수
+    새로운 고급 알고리즘을 먼저 시도하고, 실패 시 기존 방법으로 폴백
+    """
+    
+    print(f"🔄 rPPG 분석 시작 (고급 알고리즘 우선)")
+    
+    try:
+        # 새로운 고급 rPPG 분석기 시도
+        result = advanced_analyze_and_plot(
+            rgb_csv_path, blink_csv_path, bpm_img_path, blink_img_path, fps
+        )
+        print(f"고급 rPPG 분석 성공")
+        return result
+        
+    except Exception as e:
+        print(f"고급 rPPG 분석 실패: {e}")
+        print(f"기존 방법으로 폴백...")
+        
+        # 기존 방법으로 폴백
+        return _legacy_analyze_and_plot(
+            rgb_csv_path, blink_csv_path, bpm_img_path, blink_img_path, fps
+        )
+
+
+def _legacy_analyze_and_plot(
+    rgb_csv_path: str,
+    blink_csv_path: str,
+    bpm_img_path: str,
+    blink_img_path: str,
+    fps: int = 15,
+) -> Tuple[str, str]:
+    """
+    기존 rPPG 분석 방법 (폴백용)
+    """
     
     # 스타일 설정
     mpl.rcParams['font.family'] = 'DejaVu Sans'
@@ -60,7 +98,7 @@ def analyze_and_plot(
 
     # BPM 계산(Fourier, Wavelet, Interbeat 바꾸면서)
     hr_fourier_pos = fourier_analysis(signal_pos, fps) * 60
-    print(f"POS + Fourier BPM : {hr_fourier_pos:.2f}")
+    print(f"Legacy POS + Fourier BPM : {hr_fourier_pos:.2f}")
 
     # BPM 시계열
     bpm_per_second = []
@@ -80,7 +118,7 @@ def analyze_and_plot(
     plt.axhspan(60, 100, color='lightgreen', alpha=0.2, label='Normal range')
     
     # 스타일
-    plt.title("Heart Rate Over Time", pad=15)
+    plt.title("Heart Rate Over Time (Legacy)", pad=15)
     plt.xlabel("Time (seconds)")
     plt.ylabel("Estimated BPM")
     if len(time_bpm) > 0:

@@ -25,10 +25,8 @@ class _HoverBoxState extends State<HoverBox> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => UsageDetailPage(
-                title: widget.title,
-                detail: widget.detail,
-              ),
+              builder: (context) =>
+                  UsageDetailPage(title: widget.title, detail: widget.detail),
             ),
           );
         },
@@ -45,21 +43,25 @@ class _HoverBoxState extends State<HoverBox> {
                 color: Colors.black.withOpacity(0.05),
                 blurRadius: 6,
                 offset: Offset(0, 3),
-              )
+              ),
             ],
           ),
           child: Row(
             children: [
-              Icon(CupertinoIcons.arrow_right_circle_fill,
-                  color: Colors.red[300], size: 20),
+              Icon(
+                CupertinoIcons.arrow_right_circle_fill,
+                color: Colors.red[300],
+                size: 20,
+              ),
               SizedBox(width: 10),
               Expanded(
                 child: Text(
                   widget.title,
                   style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black87),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
             ],
@@ -111,8 +113,8 @@ class _RMindBottomNavBarState extends State<RMindBottomNavBar> {
             label = "List";
             break;
           case 2:
-            icon = Icons.settings;
-            label = "Settings";
+            icon = Icons.person;
+            label = "마이페이지";
             break;
           default:
             icon = Icons.circle;

@@ -249,7 +249,7 @@ class _RMindHomeScreenState extends State<RMindHomeScreen> {
         selectedIndex: selectedIndex,
         onItemTapped: (index) {
           if (index == 2) {
-            // Settings 버튼 클릭 시 마이페이지로 이동
+            // 마이페이지 버튼 클릭 시 마이페이지로 이동
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => MyPageScreen()),

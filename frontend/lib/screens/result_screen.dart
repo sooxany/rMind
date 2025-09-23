@@ -107,7 +107,7 @@ class _ResultPageState extends State<ResultPage> {
         selectedIndex: selectedIndex,
         onItemTapped: (index) {
           if (index == 2) {
-            // Settings 버튼 클릭 시 마이페이지로 이동
+            // 마이페이지 버튼 클릭 시 마이페이지로 이동
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => MyPageScreen()),
@@ -127,7 +127,7 @@ class _ResultPageState extends State<ResultPage> {
     if (title.contains('심박수')) {
       imageType = 'bpm';
       fallbackAssetPath = 'assets/images/bpm_ex.png';
-    } else if (title.contains('시선 흔들림')) {
+    } else if (title.contains('눈 깜빡임')) {
       imageType = 'blink';
       fallbackAssetPath = 'assets/images/blink_ex.png';
     } else if (title.contains('몸의 움직임')) {

@@ -53,7 +53,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Settings", style: TextStyle(color: Colors.black)),
+        title: Text("마이페이지", style: TextStyle(color: Colors.black)),
         iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: Colors.white,
         elevation: 0,

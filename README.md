@@ -16,7 +16,7 @@ rMind는 카메라 기반 **rPPG(remote photoplethysmography)** 기술을 활용
 ---
 
 <p align="center">
-  <img src="docs/UI_page.png" alt="UI Page" width="100%"/>
+  <img src="docs/UI_page.PNG" alt="UI Page" width="100%"/>
 </p>
 
 ---

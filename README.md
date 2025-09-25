@@ -15,6 +15,10 @@ rMind는 카메라 기반 **rPPG(remote photoplethysmography)** 기술을 활용
 
 ---
 
+<p align="center">
+  <img src="docs/UI_page.png" alt="UI Page" width="400"/>
+</p>
+
 ## 📝 주요 기능
 
 - **회원가입 및 로그인**: 이메일 기반 계정 관리 및 개인화된 결과 저장
@@ -25,6 +29,10 @@ rMind는 카메라 기반 **rPPG(remote photoplethysmography)** 기술을 활용
 - **시각화 결과 제공**: BPM 곡선, 깜빡임 빈도, 움직임 그래프 등 직관적 피드백
 
 ---
+
+<p align="center">
+  <img src="docs/diagram.png" alt="System Diagram" width="400"/>
+</p>
 
 ## ⚙️ 사용 기술
 

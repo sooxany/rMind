@@ -55,7 +55,7 @@ while True:
 
     cv2.imshow("Frame", frame)  # 프레임 화면에 출력
     key = cv2.waitKey(1) & 0xFF
-    if key == ord("q"):  # 'q' 키를 누르면 종료
+    if key == ord("q"):  # 'q' 키를 누르면 종료됨
         break
 
 cv2.destroyAllWindows()
